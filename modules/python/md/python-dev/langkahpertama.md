@@ -1,0 +1,2 @@
+# Langkah Pertama Panduan Python
+

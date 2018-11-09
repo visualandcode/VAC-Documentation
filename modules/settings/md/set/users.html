@@ -1,0 +1,266 @@
+<h2>Settings Users</h2>
+<div class="contentusers"></div>
+
+<div class="modal fade" id="modaleditorusers" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modaleditoruserslabel">Editor</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				  <span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		<div class="modal-body" id="modaleditorusersbody">
+
+			<div class="hidden" id="edit">
+				<form id="edituser">
+					<div class="form-group">
+						<label for="text">Fullname :</label>
+						<input type="text" value="" class="form-control" name="su_fullname">
+					</div>
+					<div class="form-group">
+						<label for="email">Email :</label>
+						<input type="email" value="" class="form-control" name="su_email">
+					</div>
+					<div class="form-group">
+						<label for="pwd">Password:</label>
+						<input type="password" value="" class="form-control" name="su_passwd">
+					</div>
+					<div class="form-group form-check">
+						<label class="form-check-label">
+						  <input class="form-check-input" name="su_active" type="checkbox"> Active
+						</label>
+					</div>
+				<div class="modal-footer">
+					<button type="submit" value="true" class="btn btn-primary">Submit</button>
+					<button type="button" value="false" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+				</form>
+			</div>
+
+			<div class="hidden" id="create">
+				<form id="createuser">
+					<div class="form-group">
+						<label for="text">Fullname :</label>
+						<input type="text" class="form-control" name="su_fullname" >
+					</div>
+					<div class="form-group">
+						<label for="email">Email :</label>
+						<input type="email" class="form-control" name="su_email">
+					</div>
+					<div class="form-group">
+						<label for="pwd">Password:</label>
+						<input type="password" class="form-control" name="su_passwd" >
+					</div>
+					<div class="form-group form-check">
+						<label class="form-check-label">
+						  <input class="form-check-input" name="su_active" type="checkbox"> Active 
+						</label>
+					</div>
+
+				<div class="modal-footer">
+					<button type="submit" value="true" class="btn btn-primary">Submit</button>
+					<button type="button" value="false" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+
+				</form>
+			</div>
+
+			<div class="hidden" id="delete">
+				<div class="form-group">
+					<label for="delete">Are you sure to delete this user ? </label>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" value="true" class="btn btn-primary">Delete</button>
+					<button type="button" value="false" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+			<div class="hidden" id="notice">
+				<div class="form-group">
+					<label for="notice" id="messagenotice">Cannot select more than one row.</label>
+				</div>
+				<div class="modal-footer">
+					<button type="button" value="false" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+			<div class="hidden" id="view">
+				<div class="row">
+				    <div class="col-sm-4">Fullname</div>
+				    <div class="col-sm-8">: <span name="su_fullname"></span></div>
+				</div>
+				<div class="row">
+				    <div class="col-sm-4">Email</div>
+				    <div class="col-sm-8">: <span name="su_email"></span></div>
+				</div>
+				<div class="row">
+				    <div class="col-sm-4">Privileges</div>
+				    <div class="col-sm-8">: <span name="su_privilegeid"></span></div>
+				</div>
+				<div class="row">
+				    <div class="col-sm-4">Status Active</div>
+				    <div class="col-sm-8">: <span name="su_active"></span></div>
+				</div><br><br>
+				<div class="modal-footer">
+					<button type="button" value="false" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+		</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+var actionforms = {
+	edit : function () {
+		$("#edituser").reqjson("/settings/users/update" , function (data) {
+			console.log(data);
+		});
+	} , 
+
+	add : function () {
+		$("#createuser").reqjson("/settings/users/create" , function (data) {
+			console.log(data);
+		});
+	} , 
+	
+	delete : function () {
+		//alert(1);
+	} 
+};
+
+actionforms.edit();
+actionforms.add();
+actionforms.delete();
+
+function hideAllContent () {
+	$(".hidden").each(function () {
+		$(this).hide();
+	});
+}
+
+$(".contentusers").grid( "/userlist" , {
+	label : "User List" ,
+	columns : {
+		"Username"   	 : "su_email" , 
+		"Email" 	 	 : "su_email" ,
+		"Full Name" 	 : "su_fullname" ,
+		"Privilege"      : "sp_privilegename"
+	} , 
+	checkbox : true , 
+	checkall : false , 
+	index 	 : "su_id" ,
+	paginate : 10 , 
+	action   : {
+		edit : function (checkedId) {
+			hideAllContent();
+			$("#modaleditorusers").modal();
+			$("#modaleditoruserslabel").html("Edit User");
+			if ( checkedId.length == 1 ) {
+				var edituser = $("#modaleditorusersbody").find("#edit");
+				$(edituser).show();
+
+				$.postjson("/settings/users/get/" , { uid : checkedId.toString() } , function (data) {
+					var sufullname = $(edituser).find("input[name=su_fullname]");
+					var suemail    = $(edituser).find("input[name=su_email]");
+					var suactive   = $(edituser).find("input[name=su_active]");
+					var result     = data.result[0];
+					$(sufullname).val(result.su_fullname);
+					$(suemail).val(result.su_email);
+
+					if ( result.su_active == "1" ) {
+						$(suactive).attr("checked" , "true");
+					}
+
+				})
+
+			} else if ( checkedId.length == 0 ) {
+				$("#modaleditoruserslabel").html("Notice");
+				$("#messagenotice").html("Please select one row.");
+				$("#modaleditorusersbody").find("#notice").show();
+			} else {
+				$("#modaleditoruserslabel").html("Notice");
+				$("#messagenotice").html("Cannot select more than 1 row.");
+				$("#modaleditorusersbody").find("#notice").show();
+			}
+		} , 
+
+		add : function () {
+			hideAllContent();
+			$("#modaleditorusers").modal();
+			$("#modaleditoruserslabel").html("Add User");
+			$("#modaleditorusersbody").find("#create").show();
+		} , 
+		
+		delete : function (checkedId) {
+			hideAllContent();
+			$("#modaleditorusers").modal();
+			$("#modaleditoruserslabel").html("Delete User");
+
+			if ( checkedId.length == 1 ) {
+				$("#modaleditorusersbody").find("#delete").show();
+			} else if ( checkedId.length == 0 ) {
+				$("#modaleditoruserslabel").html("Notice");
+				$("#messagenotice").html("Please select one row.");
+				$("#modaleditorusersbody").find("#notice").show();
+			} else {
+				$("#modaleditoruserslabel").html("Notice");
+				$("#messagenotice").html("Cannot select more than 1 row.");
+				$("#modaleditorusersbody").find("#notice").show();
+			}
+		} , 
+
+		view  : function (checkedId) {
+			hideAllContent();
+			$("#modaleditorusers").modal();
+			$("#modaleditoruserslabel").html("Detail User");
+
+			if ( checkedId.length == 1 ) {
+				var viewuser = $("#modaleditorusersbody").find("#view");
+				$(viewuser).show();
+
+				$.postjson("/settings/users/get/" , { uid : checkedId.toString() } , function (data) {
+					var sufullname     = $(viewuser).find("span[name=su_fullname]");
+					var suemail        = $(viewuser).find("span[name=su_email]");
+					var suprivilegeid    = $(viewuser).find("span[name=su_privilegeid]");
+					var suactive   	   = $(viewuser).find("span[name=su_active]");
+
+
+					var result         = data.result[0];
+					$(sufullname).html(result.su_fullname);
+					$(suemail).html(result.su_email);
+					$(suprivilegeid).html(result.sp_privilegename);
+					
+
+
+					if ( result.su_active == "1" ) {
+						$(suactive).html("Active");
+					} else {
+						$(suactive).html("Not Active");
+					}
+
+				})
+
+
+			} else if ( checkedId.length == 0 ) {
+				$("#modaleditoruserslabel").html("Notice");
+				$("#messagenotice").html("Please select one row.");
+				$("#modaleditorusersbody").find("#notice").show();
+			} else {
+				$("#modaleditoruserslabel").html("Notice");
+				$("#messagenotice").html("Cannot select more than 1 row.");
+				$("#modaleditorusersbody").find("#notice").show();
+			}
+		}  
+	}
+});
+
+
+
+
+</script>

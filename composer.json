@@ -1,0 +1,15 @@
+{
+    "name": "wahyu-kct/kct-librarydocs",
+    "authors": [
+        {
+            "name": "Ahmad Wahyudin",
+            "email": "wahyu@kct.co.id"
+        }
+    ],
+    "autoload": { 
+    	"psr-4": { 
+    		"Libs\\": "libraries/" 
+    	} 
+	} ,
+    "require": {}
+}

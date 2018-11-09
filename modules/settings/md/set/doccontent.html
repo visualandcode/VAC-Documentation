@@ -1,0 +1,157 @@
+<h2>Document and Content</h2>
+<div class="row">
+	<div class="col-6">
+		<div class="form-group">
+		  <label for="directory">Modules</label>
+		  <select id="selectmodules" class="form-control" ></select>
+		</div>
+		
+		<div class="form-group">
+		  <label for="directory">Markdown Directory</label>
+		  <select id="directory" class="form-control"></select>
+		</div>
+
+
+		<div status='hide' style="display:none;" id="newfilenamecontent" class="form-group">
+		  <label for="new">New markdown <span style='color:red;' id='atfoldernew'></span>?</label>
+			 <input type="text" placeholder="Filename" id="newfilename" class="form-control"><br>
+		     <button id="newmd" class="btn btn-primary"><i class='fa fa-pencil'></i> Create</button>
+		</div>
+
+	</div>
+	<div class="col-6">
+		<h3>Markdown</h3>
+		<select id="markdown" class="form-control" style="height:300px;" multiple></select>
+
+		<div status='hide' style="display:none;" id="editfilenamecontent" class="form-group">
+			 <br>
+		     <button id="editmd" class="btn btn-primary"><i class='fa fa-pencil'></i> Edit File Markdown <span style='font-weight: bold;' id='atmarkdown'></span> ?</button>
+		</div>
+
+	</div>
+
+
+	<div class="col-12" id="iframemdeditor">
+		<iframe src="/md-editor/" id="iframemd" frameborder="0" style="width: 93%; height: 700px;"></iframe>
+	</div>
+
+</div>
+
+<style>
+	#iframemdeditor {
+		border-radius: 4px;
+	}
+</style>
+
+<script>
+var requestmodules = $.postjson("/settings/docmanagement/modules" , {} , function (data) {
+	var countresult = Object.keys(data.result);
+	if ( data.success == true && countresult.length > 0 ) {
+		var contentoption = '';
+		contentoption += "<option value=''>- choose -</option>";
+		$.each(data.result , function ( key , val ) {
+			contentoption += "<option value='"+val.sm_modulepath+"'>  "+val.sm_modulename+"</option>";
+		});
+
+		$("#selectmodules").html(contentoption);
+	}
+});
+$("#selectmodules").on('change' , function (e) {
+	var valuemodules  = $(this).val();
+	var requestdir = $.postjson("/settings/docmanagement/directory" , { contentdir : [valuemodules] , mode : "modules" } , function (data) {
+		var countresult = Object.keys(data.result);
+		if ( data.success == true && countresult.length > 0 ) {
+			var contentoptiondir = '';
+			var contentoptionmd  = '';
+			contentoptiondir += "<option value=''>- choose -</option>";
+			$.each(data.result , function ( key , val ) {
+				$.each( Object.keys(val) , function ( keydir , valdir ) {
+					contentoptiondir += "<option value='"+valdir+"'>"+valdir+"</option>";
+				})
+				$.each( val , function ( keymd , valmd ) {
+					$.each( valmd , function ( keymds , valmds ) {
+						contentoptionmd += "<option value='"+valmds+"'> "+valmds+"</option>";
+					})
+				})
+			});
+			$("#directory").html(contentoptiondir);
+			$("#markdown").html("");
+		}
+	});
+	e.preventDefault();
+});
+
+$("#directory").on("change" , function (e) {
+	var valuedir          = $(this).val();
+	if ( valuedir == '' ) return false;
+
+	var valuemodules      = $("#selectmodules").val();
+	var requestdir = $.postjson("/settings/docmanagement/directory" , { contentdir : valuemodules + "/" + valuedir , mode : "directory" } , function (data) {
+		var countresult = Object.keys(data.result);
+		if ( data.success == true && countresult.length > 0 ) {
+			var contentoptiondir = '';
+			var contentoptionmd  = '';
+
+			$.each(data.result , function ( key , val ) {
+				$.each( val , function ( keymd , valmd ) {
+					contentoptionmd += "<option value='"+valmd+"'> "+valmd+"</option>";
+				})
+			});
+			$("#markdown").html(contentoptionmd);
+			$("#atfoldernew").html(" at " +  valuemodules + "/" + valuedir );
+			$("#newfilenamecontent").click();
+		}
+	});
+	e.preventDefault();
+});
+
+
+$("#markdown").on('change' , function () {
+	var thisvalue = $(this).val();
+	if ( thisvalue.length > 1 ) {
+		alert('Cannot edit 2 file in one time!');
+	} else {
+		$("#atmarkdown").html(" at " + thisvalue );
+	}
+	$("#editfilenamecontent").click();
+
+});
+
+$("#newfilenamecontent").click(function (e) {
+	if ( $(this).attr('status') == 'hide' ) {
+		$(this).toggle('slow');
+		$(this).attr('status' , "show");
+	}
+});
+
+$("#editfilenamecontent").click(function (e) {
+	if ( $(this).attr('status') == 'hide' ) {
+		$(this).toggle('slow');
+		$(this).attr('status' , "show");
+	}
+});
+
+
+$("#editmd").click(function () {
+	var modules   = $("#selectmodules").val();
+	var directory = $("#directory").val();
+	var markdown  = $("#markdown").val();
+
+	var filename  = "/md-editor/?modules/" + modules + "/md/" + directory + "/" + markdown;
+	if ( markdown == "_sidebar.md" ) {
+		filename  = "/md-editor/?modules/" + modules + "/_sidebar.md";
+	}
+
+	$("#iframemd").attr("src" , filename);
+});
+
+$("#newmd").click(function () {
+	var thisvalue  = $("#newfilename").val();
+	if ( thisvalue == '' ) return false;
+	var modules    = $("#selectmodules").val();
+	var directory  = $("#directory").val();
+	var filename   = "/md-editor/?modules/" + modules + "/md/" + directory + "/" + thisvalue + ".md";
+	$("#iframemd").attr("src" , filename);
+});
+
+</script>
