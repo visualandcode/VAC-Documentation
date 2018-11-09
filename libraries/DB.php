@@ -8,7 +8,7 @@ class DB {
 	private static $dbhost = 'localhost';
 	private static $dbuser = 'root';
 	private static $dbpass = '';
-	private static $dbname = 'kct-knowledge';	
+	private static $dbname = 'documentation';	
 	public $result;
 	public $error = 0;
 
