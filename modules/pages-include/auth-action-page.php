@@ -10,6 +10,7 @@ $username = $request->get('username');
 $password = $request->get('password' , 'md5');
 
 if ( $request->isPost() ) {
+
 	if ( $username != false && $password != false) {
 		
 		$selectusers = $db->query("
@@ -56,6 +57,10 @@ if ( $request->isPost() ) {
 				"msg" => 'LoggedIn! , Welcome ' . $fetchuser['su_fullname'] . "!"
 			));
 
+		} else {
+			$request->resjson(array(
+				"msg" => 'Error'
+			));
 		}
 
 

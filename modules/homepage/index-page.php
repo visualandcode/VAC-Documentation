@@ -56,7 +56,7 @@
             return editHtml
               + html
               + '\n\n----\n\n'
-              + '<a href="http://kct.co.id" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by PT Kreasindo Cipta Teknologi</a>'
+              + '<a href="#" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by Docsify</a>'
           })
         }
       ]

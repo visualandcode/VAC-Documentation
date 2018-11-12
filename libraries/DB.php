@@ -8,7 +8,7 @@ class DB {
 	private static $dbhost = 'localhost';
 	private static $dbuser = 'root';
 	private static $dbpass = '';
-	private static $dbname = 'documentation';	
+	private static $dbname = 'vac_manage_documentation';	
 	public $result;
 	public $error = 0;
 
@@ -31,6 +31,7 @@ class DB {
 	 */
 	public function query ($query =null , $bind = null) {
 		if ( !is_null($query) ) {
+
 			$query = $this->conn->query($query);
 			if ( !$query ) {
 				$this->error += 1;

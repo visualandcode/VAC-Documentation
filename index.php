@@ -19,6 +19,7 @@ if ( $uri == 'login' ) {
 		header("Location: /homepage/ "); /* Redirect browser */
 	} else {
 		require_once('modules/pages-include/auth-action-page.php');
+		return false;
 	}
 }
 
