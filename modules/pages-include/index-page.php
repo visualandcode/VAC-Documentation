@@ -57,9 +57,7 @@
           </span>
           -->
           
-          <span class="login100-form-avatar">
-            <img src="/assets/auth/images/ec30161568.png" alt="AVATAR">
-          </span>
+          <span class="login100-form-avatar">YOUR LOGO</span>
 
           <div class="wrap-input100 validate-input m-t-85 m-b-35" data-validate = "Enter username">
             <input class="input100" id="username" type="text" name="username">
